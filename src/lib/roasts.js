@@ -21,15 +21,11 @@ export async function dislikeRoast(id) {
   }
 }
 
-// Sort a roast list for the Fresh / Fire / Ratio tabs.
+// Sort a roast list for the Fresh / Fire tabs.
 export function sortRoasts(list, mode) {
   const arr = [...list];
   if (mode === 'fire') {
     arr.sort((a, b) => (b.likes || 0) - (a.likes || 0) || tCmp(a, b));
-  } else if (mode === 'ratio') {
-    arr.sort(
-      (a, b) => (b.likes - b.dislikes || 0) - (a.likes - a.dislikes || 0) || tCmp(a, b),
-    );
   } else {
     arr.sort(tCmp); // fresh: newest first
   }

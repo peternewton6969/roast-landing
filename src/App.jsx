@@ -22,7 +22,6 @@ const SpeechRecognition =
 const TABS = [
   { key: 'fresh', label: 'Fresh' },
   { key: 'fire', label: 'Fire' },
-  { key: 'ratio', label: 'Ratio' },
 ];
 
 function RoastCard({ roast, fresh, onLike, onDislike }) {
