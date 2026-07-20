@@ -236,9 +236,9 @@ export default function App() {
         </p>
       </header>
 
-      {/* TODO: Replace with hero-ball.jpg (IMG_2646) — the Newter 69 shot */}
+      {/* Hero: the Newter 69 shot (IMG_2646). */}
       <div className="hero">
-        <img src="/golf-bg.jpg" alt="Roast'n Rake" />
+        <img src="/hero-ball.jpg" alt="Roast'n Rake — Newter 69" />
       </div>
 
       <section className="input-card">
