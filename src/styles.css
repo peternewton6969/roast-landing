@@ -109,14 +109,16 @@ body {
 .hero img {
   display: block;
   width: 100%;
-  height: 280px;
+  height: 340px;
   object-fit: cover;
-  object-position: center;
+  /* Portrait shot: anchor the crop to the bottom so the ball (NEWTER 69) stays
+     in frame rather than being cut off below the beer. */
+  object-position: center bottom;
 }
 
 @media (min-width: 700px) {
   .hero img {
-    height: 400px;
+    height: 460px;
   }
 }
 
