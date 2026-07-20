@@ -2,6 +2,17 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase, isConfigured } from './supabaseClient.js';
 import { getVerdict, verdictColor } from './lib/verdict.js';
 import { likeRoast, dislikeRoast, sortRoasts } from './lib/roasts.js';
+import { isRejected } from './lib/moderation.js';
+
+/** Fisher–Yates shuffle (used to randomize the feed on page load). */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 const SpeechRecognition =
   typeof window !== 'undefined'
@@ -54,7 +65,7 @@ export default function App() {
   const recognitionRef = useRef(null);
 
   const [roasts, setRoasts] = useState([]);
-  const [tab, setTab] = useState('fresh');
+  const [tab, setTab] = useState(null); // null = randomized default (see load below)
   const freshId = useRef(null);
 
   // Waitlist
@@ -64,7 +75,8 @@ export default function App() {
   const [wlDone, setWlDone] = useState(false);
   const [wlError, setWlError] = useState('');
 
-  const sorted = useMemo(() => sortRoasts(roasts, tab), [roasts, tab]);
+  // Default (tab === null) keeps the randomized load order; the tabs sort on demand.
+  const sorted = useMemo(() => (tab ? sortRoasts(roasts, tab) : roasts), [roasts, tab]);
 
   // --- Load feed + subscribe to realtime INSERT (new roasts) and UPDATE (counts) ---
   useEffect(() => {
@@ -76,7 +88,8 @@ export default function App() {
       .order('created_at', { ascending: false })
       .limit(200)
       .then(({ data }) => {
-        if (active && Array.isArray(data)) setRoasts(data);
+        // Randomize the order on load so the feed feels different each visit.
+        if (active && Array.isArray(data)) setRoasts(shuffle(data));
       });
 
     const upsert = (row) =>
@@ -138,6 +151,13 @@ export default function App() {
   async function handleRake() {
     const content = roast.trim();
     if (!content || submitting) return;
+    // Content filter: reject slurs/hate. Rejected roasts get no verdict and are
+    // NOT inserted into the database.
+    if (isRejected(content)) {
+      setVerdict(null);
+      setError('Keep it on the golf, not identities. That one’s not going up.');
+      return;
+    }
     setSubmitting(true);
     setError('');
     try {
@@ -228,10 +248,7 @@ export default function App() {
           </p>
         </div>
 
-        <p className="blurb">
-          The golf app that roasts your buddies with brutal accuracy. While we finish building it
-          &mdash; submit your best roast below.
-        </p>
+        <p className="blurb">While we finish building it &mdash; submit your best roast below.</p>
       </header>
 
       {/* Hero: the Newter 69 shot (IMG_2646). */}
