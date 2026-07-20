@@ -1,0 +1,10 @@
+node_modules/
+dist/
+
+# Environment variables — Supabase URL/anon key (safe to expose, but not committed here)
+.env
+.env.local
+.env.*.local
+
+# Supabase CLI
+supabase/.temp/

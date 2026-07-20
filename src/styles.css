@@ -1,0 +1,400 @@
+:root {
+  --bg: #0a1628;
+  --surface: #1e3a5f;
+  --surface2: #162d4a;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --text: #f8fafc;
+  --dim: #94a3b8;
+  --border: #2d4a6b;
+  --ink: #0a1628;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 16px calc(48px + env(safe-area-inset-bottom));
+}
+
+/* --- Header --- */
+.header {
+  text-align: center;
+  padding: 40px 8px 8px;
+}
+
+.brand {
+  font-size: clamp(40px, 12vw, 72px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin: 0;
+}
+
+.brand .accent {
+  color: var(--green);
+}
+
+.tagline {
+  margin: 14px 0 0;
+  font-size: clamp(18px, 5vw, 24px);
+  font-weight: 800;
+  color: var(--green);
+}
+
+/* --- Pitch: the hook is the tagline, this is the explanation --- */
+.pitch {
+  margin: 22px auto 0;
+  max-width: 34ch;
+  display: grid;
+  gap: 10px;
+}
+
+.pitch p {
+  margin: 0;
+  font-size: clamp(15px, 4.2vw, 18px);
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.pitch .pitch-lead {
+  font-weight: 700;
+}
+
+.pitch .pitch-detail {
+  color: var(--dim);
+}
+
+.pitch .pitch-detail strong {
+  color: var(--text);
+}
+
+/* --- Brief description --- */
+.blurb {
+  margin: 20px auto 0;
+  max-width: 30ch;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--dim);
+  text-align: center;
+}
+
+/* --- Hero image --- */
+.hero {
+  position: relative;
+  margin: 24px 0 8px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.hero img {
+  display: block;
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (min-width: 700px) {
+  .hero img {
+    height: 400px;
+  }
+}
+
+/* Bottom gradient so the image melts into the input section below. */
+.hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 45%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4));
+  pointer-events: none;
+}
+
+/* --- Input section --- */
+.input-card {
+  margin-top: 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.roast-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.roast-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 56px;
+  padding: 14px 16px;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  font-family: inherit;
+  resize: none;
+  line-height: 1.4;
+}
+
+.roast-input:focus {
+  border-color: var(--green);
+}
+
+.mic {
+  flex: 0 0 auto;
+  width: 56px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.mic.listening {
+  border-color: var(--green);
+  color: var(--green);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.mic:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@keyframes pulse {
+  50% {
+    background: rgba(34, 197, 94, 0.15);
+  }
+}
+
+.rake-btn {
+  width: 100%;
+  min-height: 56px;
+  border: none;
+  border-radius: 12px;
+  background: var(--green);
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.rake-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--dim);
+  text-align: center;
+  margin: 0;
+}
+
+.err {
+  font-size: 13px;
+  color: var(--red);
+  text-align: center;
+  margin: 0;
+}
+
+/* --- Verdict overlay --- */
+.verdict-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 22, 40, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 50;
+  padding: 24px;
+  text-align: center;
+}
+
+.verdict-word {
+  font-size: clamp(56px, 20vw, 120px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.verdict-sub {
+  font-size: 15px;
+  color: var(--dim);
+}
+
+/* --- Feed --- */
+.section-title {
+  margin: 36px 0 12px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.feed {
+  display: grid;
+  gap: 10px;
+}
+
+.roast-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.roast-card.fresh {
+  animation: slidein 0.35s ease;
+}
+
+@keyframes slidein {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.roast-text {
+  font-size: 16px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.roast-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.roast-time {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.empty {
+  font-size: 14px;
+  color: var(--dim);
+  text-align: center;
+  padding: 16px;
+}
+
+/* --- Waitlist --- */
+.waitlist {
+  margin-top: 44px;
+  padding: 22px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.waitlist h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.waitlist .sub {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: var(--dim);
+}
+
+.field {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  font-family: inherit;
+}
+
+.field:focus {
+  border-color: var(--green);
+}
+
+.field-help {
+  font-size: 12px;
+  color: var(--dim);
+  margin: -4px 0 4px 2px;
+}
+
+.waitlist-btn {
+  width: 100%;
+  min-height: 52px;
+  border: none;
+  border-radius: 12px;
+  background: var(--amber);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.waitlist-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.waitlist-done {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--green);
+  text-align: center;
+  padding: 8px;
+}
+
+.footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--dim);
+}
