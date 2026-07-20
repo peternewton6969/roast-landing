@@ -253,7 +253,7 @@ body {
 
 /* --- Feed --- */
 .section-title {
-  margin: 36px 0 12px;
+  margin: 0;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -261,9 +261,92 @@ body {
   color: var(--dim);
 }
 
+.feed-head {
+  margin: 36px 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.tab {
+  border: none;
+  background: transparent;
+  color: var(--dim);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: var(--green);
+  color: var(--ink);
+}
+
 .feed {
   display: grid;
   gap: 10px;
+}
+
+/* --- Engagement (fire / dislike) --- */
+.engage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.fire-btn,
+.dislike-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fire is the primary action: bigger, warmer. */
+.fire-btn {
+  font-size: 16px;
+  font-weight: 800;
+  padding: 8px 16px;
+}
+
+.fire-btn:active {
+  background: rgba(245, 158, 11, 0.18);
+  border-color: var(--amber);
+}
+
+/* Dislike is intentionally smaller / quieter. */
+.dislike-btn {
+  font-size: 13px;
+  padding: 6px 12px;
+  color: var(--dim);
+}
+
+.dislike-btn:active {
+  background: rgba(148, 163, 184, 0.14);
+}
+
+.engage .count {
+  font-variant-numeric: tabular-nums;
 }
 
 .roast-card {

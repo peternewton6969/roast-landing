@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase, isConfigured } from './supabaseClient.js';
 import { getVerdict, verdictColor } from './lib/verdict.js';
+import { likeRoast, dislikeRoast, sortRoasts } from './lib/roasts.js';
 import { timeAgo } from './lib/timeAgo.js';
 
 const SpeechRecognition =
@@ -8,7 +9,13 @@ const SpeechRecognition =
     ? window.SpeechRecognition || window.webkitSpeechRecognition
     : null;
 
-function RoastCard({ roast, fresh }) {
+const TABS = [
+  { key: 'fresh', label: 'Fresh' },
+  { key: 'fire', label: 'Fire' },
+  { key: 'ratio', label: 'Ratio' },
+];
+
+function RoastCard({ roast, fresh, onLike, onDislike }) {
   return (
     <div className={`roast-card${fresh ? ' fresh' : ''}`}>
       <div className="roast-text">{roast.content}</div>
@@ -17,6 +24,24 @@ function RoastCard({ roast, fresh }) {
           {roast.verdict}
         </span>
         <span className="roast-time">{timeAgo(roast.created_at)}</span>
+      </div>
+      <div className="engage">
+        <button
+          type="button"
+          className="fire-btn"
+          onClick={() => onLike(roast.id)}
+          aria-label="Fire — like this roast"
+        >
+          🔥 <span className="count">{roast.likes ?? 0}</span>
+        </button>
+        <button
+          type="button"
+          className="dislike-btn"
+          onClick={() => onDislike(roast.id)}
+          aria-label="Thumbs down"
+        >
+          👎 <span className="count">{roast.dislikes ?? 0}</span>
+        </button>
       </div>
     </div>
   );
@@ -31,6 +56,7 @@ export default function App() {
   const recognitionRef = useRef(null);
 
   const [roasts, setRoasts] = useState([]);
+  const [tab, setTab] = useState('fresh');
   const freshId = useRef(null);
 
   // Waitlist
@@ -40,7 +66,9 @@ export default function App() {
   const [wlDone, setWlDone] = useState(false);
   const [wlError, setWlError] = useState('');
 
-  // --- Load feed + subscribe to realtime inserts ---
+  const sorted = useMemo(() => sortRoasts(roasts, tab), [roasts, tab]);
+
+  // --- Load feed + subscribe to realtime INSERT (new roasts) and UPDATE (counts) ---
   useEffect(() => {
     if (!supabase) return undefined;
     let active = true;
@@ -48,23 +76,29 @@ export default function App() {
       .from('roasts')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(100)
+      .limit(200)
       .then(({ data }) => {
         if (active && Array.isArray(data)) setRoasts(data);
       });
 
+    const upsert = (row) =>
+      setRoasts((prev) => {
+        const i = prev.findIndex((r) => r.id === row.id);
+        if (i === -1) return [row, ...prev];
+        const next = prev.slice();
+        next[i] = { ...next[i], ...row };
+        return next;
+      });
+
     const channel = supabase
       .channel('roasts-feed')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'roasts' },
-        (payload) => {
-          setRoasts((prev) =>
-            prev.some((r) => r.id === payload.new.id) ? prev : [payload.new, ...prev],
-          );
-          freshId.current = payload.new.id;
-        },
-      )
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'roasts' }, (p) => {
+        freshId.current = p.new.id;
+        upsert(p.new);
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'roasts' }, (p) => {
+        upsert(p.new);
+      })
       .subscribe();
 
     return () => {
@@ -117,11 +151,13 @@ export default function App() {
         if (insErr) throw insErr;
         // The realtime subscription adds it to the feed.
       } else {
-        // Preview mode (no backend yet): show it locally so the feed isn't empty.
         const local = {
           id: crypto.randomUUID?.() ?? String(Date.now()),
           content,
           verdict: v,
+          likes: 0,
+          dislikes: 0,
+          source: 'user',
           created_at: new Date().toISOString(),
         };
         freshId.current = local.id;
@@ -137,6 +173,14 @@ export default function App() {
       setSubmitting(false);
     }
   }
+
+  // --- Like / dislike (optimistic; realtime reconciles the authoritative count) ---
+  function bump(id, field, fn) {
+    setRoasts((prev) => prev.map((r) => (r.id === id ? { ...r, [field]: (r[field] ?? 0) + 1 } : r)));
+    fn(id);
+  }
+  const handleLike = (id) => bump(id, 'likes', likeRoast);
+  const handleDislike = (id) => bump(id, 'dislikes', dislikeRoast);
 
   // --- Waitlist ---
   async function handleWaitlist(e) {
@@ -231,12 +275,37 @@ export default function App() {
         )}
       </section>
 
-      <h2 className="section-title">Live Roasts</h2>
+      <div className="feed-head">
+        <h2 className="section-title">Live Roasts</h2>
+        <div className="tabs" role="tablist" aria-label="Sort roasts">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={tab === t.key}
+              className={`tab${tab === t.key ? ' active' : ''}`}
+              onClick={() => setTab(t.key)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="feed">
-        {roasts.length === 0 ? (
+        {sorted.length === 0 ? (
           <p className="empty">No roasts yet. Be the first to rake someone.</p>
         ) : (
-          roasts.map((r) => <RoastCard key={r.id} roast={r} fresh={r.id === freshId.current} />)
+          sorted.map((r) => (
+            <RoastCard
+              key={r.id}
+              roast={r}
+              fresh={r.id === freshId.current}
+              onLike={handleLike}
+              onDislike={handleDislike}
+            />
+          ))
         )}
       </div>
 
