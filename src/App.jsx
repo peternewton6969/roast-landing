@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase, isConfigured } from './supabaseClient.js';
 import { getVerdict, verdictColor } from './lib/verdict.js';
 import { likeRoast, dislikeRoast, sortRoasts } from './lib/roasts.js';
-import { timeAgo } from './lib/timeAgo.js';
 
 const SpeechRecognition =
   typeof window !== 'undefined'
@@ -19,29 +18,28 @@ function RoastCard({ roast, fresh, onLike, onDislike }) {
   return (
     <div className={`roast-card${fresh ? ' fresh' : ''}`}>
       <div className="roast-text">{roast.content}</div>
-      <div className="roast-meta">
+      <div className="engage">
+        <div className="engage-actions">
+          <button
+            type="button"
+            className="fire-btn"
+            onClick={() => onLike(roast.id)}
+            aria-label="Fire — like this roast"
+          >
+            🔥 <span className="count">{roast.likes ?? 0}</span>
+          </button>
+          <button
+            type="button"
+            className="dislike-btn"
+            onClick={() => onDislike(roast.id)}
+            aria-label="Thumbs down"
+          >
+            👎 <span className="count">{roast.dislikes ?? 0}</span>
+          </button>
+        </div>
         <span className="badge" style={{ color: verdictColor(roast.verdict) }}>
           {roast.verdict}
         </span>
-        <span className="roast-time">{timeAgo(roast.created_at)}</span>
-      </div>
-      <div className="engage">
-        <button
-          type="button"
-          className="fire-btn"
-          onClick={() => onLike(roast.id)}
-          aria-label="Fire — like this roast"
-        >
-          🔥 <span className="count">{roast.likes ?? 0}</span>
-        </button>
-        <button
-          type="button"
-          className="dislike-btn"
-          onClick={() => onDislike(roast.id)}
-          aria-label="Thumbs down"
-        >
-          👎 <span className="count">{roast.dislikes ?? 0}</span>
-        </button>
       </div>
     </div>
   );

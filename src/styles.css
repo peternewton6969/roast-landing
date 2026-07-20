@@ -302,12 +302,19 @@ body {
   gap: 10px;
 }
 
-/* --- Engagement (fire / dislike) --- */
+/* --- Engagement (fire / dislike) + verdict badge, bottom row --- */
 .engage {
   display: flex;
   align-items: center;
+  justify-content: space-between; /* actions left, verdict badge right */
   gap: 10px;
   margin-top: 2px;
+}
+
+.engage-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .fire-btn,
@@ -378,13 +385,6 @@ body {
   word-break: break-word;
 }
 
-.roast-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
 .badge {
   font-size: 12px;
   font-weight: 800;
@@ -392,11 +392,7 @@ body {
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid currentColor;
-}
-
-.roast-time {
-  font-size: 12px;
-  color: var(--dim);
+  flex: 0 0 auto;
 }
 
 .empty {
