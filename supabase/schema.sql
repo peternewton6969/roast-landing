@@ -75,6 +75,15 @@ create policy "waitlist_public_insert" on public.waitlist
   for insert with check (true);
 
 -- =========================================================================
+-- Table grants for the anon role. RLS controls WHICH rows; these grant the role
+-- access to the tables at all. (Supabase does not always auto-grant these — a
+-- missing grant surfaces as "42501 permission denied" / HTTP 401.)
+-- =========================================================================
+grant usage on schema public to anon, authenticated;
+grant select, insert on public.roasts to anon, authenticated;
+grant insert on public.waitlist to anon, authenticated;
+
+-- =========================================================================
 -- Realtime: broadcast INSERT + UPDATE on roasts so new roasts AND live like/
 -- dislike counts update across sessions without polling.
 -- (Safe to re-run — ignore "already member of publication" if it appears.)
