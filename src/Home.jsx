@@ -3,6 +3,7 @@ import { supabase, isConfigured } from './supabaseClient.js';
 import { getVerdict, verdictColor } from './lib/verdict.js';
 import { likeRoast, dislikeRoast, sortRoasts } from './lib/roasts.js';
 import { isRejected } from './lib/moderation.js';
+import Waitlist from './Waitlist.jsx';
 
 /** Fisher–Yates shuffle (used to randomize the feed on page load). */
 function shuffle(arr) {
@@ -142,13 +143,6 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [tab, setTab] = useState(null); // null = randomized default (see load below)
   const freshId = useRef(null);
-
-  // Waitlist
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [wlSubmitting, setWlSubmitting] = useState(false);
-  const [wlDone, setWlDone] = useState(false);
-  const [wlError, setWlError] = useState('');
 
   // Filter by category, then sort (tab === null keeps the randomized load order).
   const displayed = useMemo(() => {
@@ -297,28 +291,6 @@ export default function Home() {
   const handleDislike = (id) => bump(id, 'dislikes', dislikeRoast);
 
   // --- Waitlist ---
-  async function handleWaitlist(e) {
-    e.preventDefault();
-    const em = email.trim();
-    if (!em || wlSubmitting) return;
-    setWlSubmitting(true);
-    setWlError('');
-    try {
-      if (supabase) {
-        const { error: insErr } = await supabase
-          .from('waitlist')
-          .insert({ email: em, phone: phone.trim() || null });
-        // 23505 = unique violation (already signed up) — treat as success.
-        if (insErr && insErr.code !== '23505') throw insErr;
-      }
-      setWlDone(true);
-    } catch {
-      setWlError('Something went wrong. Try again.');
-    } finally {
-      setWlSubmitting(false);
-    }
-  }
-
   return (
     <div className="page">
       {verdict && (
@@ -521,40 +493,7 @@ export default function Home() {
         </section>
       )}
 
-      {mode === 'browse' && (
-        <section className="waitlist">
-        <h2>Want the full app?</h2>
-        <p className="sub">Get early access when we launch.</p>
-        {wlDone ? (
-          <div className="waitlist-done">You&rsquo;re on the list. We&rsquo;ll be in touch.</div>
-        ) : (
-          <form onSubmit={handleWaitlist} style={{ display: 'grid', gap: 10 }}>
-            <input
-              className="field"
-              type="email"
-              required
-              value={email}
-              placeholder="you@email.com"
-              onChange={(e) => setEmail(e.target.value)}
-              aria-label="Email"
-            />
-            <input
-              className="field"
-              type="tel"
-              value={phone}
-              placeholder="Phone (optional)"
-              onChange={(e) => setPhone(e.target.value)}
-              aria-label="Phone (optional)"
-            />
-            <p className="field-help">We&rsquo;ll text you when we launch. No spam. Ever.</p>
-            {wlError !== '' && <p className="err">{wlError}</p>}
-            <button type="submit" className="waitlist-btn" disabled={email.trim() === '' || wlSubmitting}>
-              {wlSubmitting ? 'Submitting…' : 'Get Early Access'}
-            </button>
-          </form>
-        )}
-        </section>
-      )}
+      {mode === 'browse' && <Waitlist />}
 
       <footer className="footer">Roast&rsquo;n Rake &middot; play fair, pay up, repeat.</footer>
     </div>

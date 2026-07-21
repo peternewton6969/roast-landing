@@ -741,19 +741,6 @@ body {
   line-height: 1.1;
 }
 
-/* Placeholder pages (Features, Captain's Log): centered heading + one line. */
-.mission-placeholder {
-  min-height: 60vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
-
-.mission-placeholder .mission-title {
-  margin: 0 0 12px;
-}
-
 .mission p {
   margin: 0 0 18px;
   font-size: 17px;
@@ -792,4 +779,46 @@ body {
   border: none;
   border-top: 1px solid var(--border);
   margin: 30px 0;
+}
+
+/* Bold subheading, one step down from .mission-h (used on Features/Captain's Log). */
+.mission-sub {
+  margin: 22px 0 6px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--green);
+}
+
+/* "Coming Soon" pill shown next to unreleased section headings. */
+.coming-soon {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+  vertical-align: middle;
+}
+
+/* Sample Captain's Commentary excerpts — quoted, accented left rule. */
+.captains-quote {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--green);
+  border-radius: 8px;
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.captains-quote p {
+  margin: 0 0 12px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.captains-quote p:last-child {
+  margin-bottom: 0;
 }
