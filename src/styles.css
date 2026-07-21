@@ -35,10 +35,36 @@ body {
   padding: 0 16px calc(48px + env(safe-area-inset-bottom));
 }
 
-/* --- Header --- */
+/* --- Header (hero image as darkened background) --- */
 .header {
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  margin: 0 -16px; /* bleed past the .page 16px padding to the screen edges */
   text-align: center;
-  padding: 40px 8px 8px;
+}
+
+.header-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+.header-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1;
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  padding: 40px 16px 28px;
 }
 
 .brand {
@@ -119,13 +145,30 @@ body {
 }
 
 /* --- Category browser (horizontally scrollable) --- */
+.cat-tabs-wrap {
+  position: relative;
+  margin: 18px -16px 4px; /* bleed to the screen edges so pills can scroll fully */
+}
+
+/* Right-edge fade to signal more tabs off screen (visual affordance only). */
+.cat-tabs-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to right, rgba(10, 22, 40, 0), #0a1628);
+  pointer-events: none;
+  z-index: 1;
+}
+
 .cat-tabs {
   display: flex;
   gap: 8px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  margin: 18px -16px 4px; /* bleed to the screen edges so pills can scroll fully */
   padding: 4px 16px 6px;
 }
 
@@ -158,43 +201,6 @@ body {
   font-size: 13px;
   font-style: italic;
   color: var(--dim);
-}
-
-/* --- Hero image --- */
-.hero {
-  position: relative;
-  margin: 24px 0 8px;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
-
-.hero img {
-  display: block;
-  width: 100%;
-  height: 340px;
-  object-fit: cover;
-  /* Portrait shot: anchor the crop to the bottom so the ball (NEWTER 69) stays
-     in frame rather than being cut off below the beer. */
-  object-position: center bottom;
-}
-
-@media (min-width: 700px) {
-  .hero img {
-    height: 460px;
-  }
-}
-
-/* Bottom gradient so the image melts into the input section below. */
-.hero::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 45%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4));
-  pointer-events: none;
 }
 
 /* --- Input section --- */

@@ -322,48 +322,51 @@ export default function App() {
         </div>
       )}
 
+      {/* Header: the Newter 69 shot (IMG_2646) as a darkened background behind the copy. */}
       <header className="header">
-        <h1 className="brand">
-          Roast<span className="accent">&rsquo;n</span> Rake
-        </h1>
-        <p className="tagline">Golf is fun. Talking shit is funner.</p>
+        <img className="header-bg" src="/hero-ball.jpg" alt="" aria-hidden="true" />
+        <div className="header-overlay" aria-hidden="true" />
+        <div className="header-content">
+          <h1 className="brand">
+            Roast<span className="accent">&rsquo;n</span> Rake
+          </h1>
+          <p className="tagline">Golf is fun. Talking shit is funner.</p>
 
-        <div className="pitch">
-          <p className="pitch-lead">It&rsquo;s a golf app that tracks scores and settles bets.</p>
-          <p className="pitch-detail">
-            The <strong>superpower</strong> comes at the end when it roasts your buddies with brutal
-            accuracy. Think Kenny Powers doing your post-round breakdown.
-          </p>
-        </div>
-
-        <div className="insult-jar-copy">
-          <h2 className="ij-heading">The Insult Jar</h2>
-          <p className="ij-body">
-            Trash talk is a skill. Browse by moment, find your line, deliver it perfectly. Tee box,
-            pre-putt, post-round &mdash; we wrote the curriculum.
-          </p>
+          <div className="pitch">
+            <p className="pitch-lead">It&rsquo;s a golf app that tracks scores and settles bets.</p>
+            <p className="pitch-detail">
+              The <strong>superpower</strong> comes at the end when it roasts your buddies with brutal
+              accuracy. Think Kenny Powers doing your post-round breakdown.
+            </p>
+          </div>
         </div>
       </header>
 
-      {/* Hero: the Newter 69 shot (IMG_2646). */}
-      <div className="hero">
-        <img src="/hero-ball.jpg" alt="Roast'n Rake — Newter 69" />
+      <div className="insult-jar-copy">
+        <h2 className="ij-heading">The Insult Jar</h2>
+        <p className="ij-body">
+          Trash talk is a skill. Browse by moment, find your line, deliver it perfectly. Tee box,
+          pre-putt, post-round &mdash; we wrote the curriculum.
+        </p>
       </div>
 
-      {/* Category browser — the situational library. Horizontally scrollable on mobile. */}
-      <div className="cat-tabs" role="tablist" aria-label="Browse by moment">
-        {CATEGORY_TABS.map((c) => (
-          <button
-            key={c.key}
-            type="button"
-            role="tab"
-            aria-selected={activeCategory === c.key}
-            className={`cat-tab${activeCategory === c.key ? ' active' : ''}`}
-            onClick={() => setActiveCategory(c.key)}
-          >
-            {c.label}
-          </button>
-        ))}
+      {/* Category browser — the situational library. Horizontally scrollable on mobile,
+          with a right-edge fade to hint at more tabs off screen. */}
+      <div className="cat-tabs-wrap">
+        <div className="cat-tabs" role="tablist" aria-label="Browse by moment">
+          {CATEGORY_TABS.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              role="tab"
+              aria-selected={activeCategory === c.key}
+              className={`cat-tab${activeCategory === c.key ? ' active' : ''}`}
+              onClick={() => setActiveCategory(c.key)}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
       </div>
       {CATEGORY_DESC[activeCategory] && (
         <p className="cat-desc">{CATEGORY_DESC[activeCategory]}</p>
