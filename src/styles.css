@@ -517,16 +517,6 @@ body {
   padding: 3px 9px;
 }
 
-/* Delivery tip shown on each card while browsing The Plant. */
-.delivery-tip {
-  margin: 2px 0 0;
-  padding-top: 8px;
-  border-top: 1px dashed var(--border);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--green);
-}
-
 .roast-card.fresh {
   animation: slidein 0.35s ease;
 }

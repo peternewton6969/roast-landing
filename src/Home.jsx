@@ -54,9 +54,6 @@ const CATEGORY_DESC = {
   swing_thought: 'Said before the shot. Sounds helpful. Is not.',
 };
 
-// Extra coaching shown on each card while browsing The Plant.
-const DELIVERY_TIP = 'Delivery tip: Say it calmly. Sound concerned. Walk away immediately.';
-
 // Submission dropdown options ("Not sure" stores as general).
 const SUBMIT_CATEGORIES = [
   { value: 'tee_box', label: 'Tee Box' },
@@ -82,7 +79,7 @@ async function insertRoast(row) {
   return res.error;
 }
 
-function RoastCard({ roast, fresh, onLike, onDislike, tip }) {
+function RoastCard({ roast, fresh, onLike, onDislike }) {
   const cat = CATEGORY_META[roast.category] || CATEGORY_META.general;
   return (
     <div className={`roast-card${fresh ? ' fresh' : ''}`}>
@@ -126,7 +123,6 @@ function RoastCard({ roast, fresh, onLike, onDislike, tip }) {
           {roast.verdict}
         </span>
       </div>
-      {tip && <p className="delivery-tip">{tip}</p>}
     </div>
   );
 }
@@ -281,6 +277,17 @@ export default function Home() {
     }
   }
 
+  // Re-randomize the feed order (on page load and on every tab switch). Likes/
+  // realtime updates bump counts in place and never trigger a reshuffle.
+  const reshuffle = () => setRoasts((prev) => shuffle(prev));
+
+  // Category tab switch: re-randomize and drop any active Fresh/Fire sort.
+  function selectCategory(key) {
+    setActiveCategory(key);
+    setTab(null);
+    reshuffle();
+  }
+
   // --- Like / dislike (optimistic; realtime reconciles the authoritative count) ---
   function bump(id, field, fn) {
     setRoasts((prev) => prev.map((r) => (r.id === id ? { ...r, [field]: (r[field] ?? 0) + 1 } : r)));
@@ -351,9 +358,13 @@ export default function Home() {
           role="tab"
           aria-selected={mode === 'browse'}
           className={`mode-tab${mode === 'browse' ? ' active' : ''}`}
-          onClick={() => setMode('browse')}
+          onClick={() => {
+            setMode('browse');
+            setTab(null);
+            reshuffle();
+          }}
         >
-          Browse
+          Insult Jar
         </button>
         <button
           type="button"
@@ -387,7 +398,7 @@ export default function Home() {
               role="tab"
               aria-selected={activeCategory === c.key}
               className={`cat-tab${activeCategory === c.key ? ' active' : ''}`}
-              onClick={() => setActiveCategory(c.key)}
+              onClick={() => selectCategory(c.key)}
             >
               {c.label}
             </button>
@@ -431,7 +442,6 @@ export default function Home() {
               fresh={r.id === freshId.current}
               onLike={handleLike}
               onDislike={handleDislike}
-              tip={activeCategory === 'swing_thought' ? DELIVERY_TIP : null}
             />
           ))
         )}
@@ -511,7 +521,8 @@ export default function Home() {
         </section>
       )}
 
-      <section className="waitlist">
+      {mode === 'browse' && (
+        <section className="waitlist">
         <h2>Want the full app?</h2>
         <p className="sub">Get early access when we launch.</p>
         {wlDone ? (
@@ -542,7 +553,8 @@ export default function Home() {
             </button>
           </form>
         )}
-      </section>
+        </section>
+      )}
 
       <footer className="footer">Roast&rsquo;n Rake &middot; play fair, pay up, repeat.</footer>
     </div>
