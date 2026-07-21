@@ -676,3 +676,117 @@ body {
   font-size: 12px;
   color: var(--dim);
 }
+
+/* --- Hamburger nav (fixed, on every page) --- */
+.nav-toggle {
+  position: fixed;
+  top: calc(10px + env(safe-area-inset-top));
+  right: 12px;
+  z-index: 45;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: rgba(10, 22, 40, 0.6);
+  color: var(--text);
+  border-radius: 10px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.nav-menu {
+  position: fixed;
+  top: calc(60px + env(safe-area-inset-top));
+  right: 12px;
+  z-index: 46;
+  min-width: 190px;
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+
+.nav-link {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link:active {
+  background: var(--surface2);
+}
+
+/* --- Mission page --- */
+.mission {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: calc(72px + env(safe-area-inset-top)) 20px calc(56px + env(safe-area-inset-bottom));
+  color: var(--text);
+}
+
+.mission-title {
+  margin: 0 0 22px;
+  font-size: clamp(28px, 8vw, 40px);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.mission p {
+  margin: 0 0 18px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.mission-lead {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.mission-h {
+  margin: 32px 0 14px;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.mission-emph {
+  font-weight: 700;
+}
+
+.mission-tagline {
+  font-size: clamp(20px, 6vw, 26px);
+  font-weight: 800;
+  color: var(--green);
+}
+
+.mission-close {
+  font-weight: 800;
+  color: var(--dim);
+}
+
+.mission-rule {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 30px 0;
+}
