@@ -31,17 +31,31 @@ const CATEGORY_META = {
   mid_round: { emoji: '🚶', label: 'Mid-Round' },
   pre_putt: { emoji: '⛳', label: 'Pre-Putt' },
   post_round: { emoji: '🍺', label: 'Post-Round' },
+  swing_thought: { emoji: '🧠', label: 'The Plant' },
   general: { emoji: '🎯', label: 'General' },
 };
 
-// Category browser tabs (All + the four situational ones; general shows under All).
+// Category browser tabs (All + the situational ones; general shows under All).
 const CATEGORY_TABS = [
   { key: 'all', label: 'All' },
   { key: 'tee_box', label: '🏌️ Tee Box' },
   { key: 'mid_round', label: '🚶 Mid-Round' },
   { key: 'pre_putt', label: '⛳ Pre-Putt' },
   { key: 'post_round', label: '🍺 Post-Round' },
+  { key: 'swing_thought', label: '🧠 The Plant' },
 ];
+
+// Short description shown under the active category tab.
+const CATEGORY_DESC = {
+  tee_box: 'Before the swing. Plant a thought, watch it grow.',
+  mid_round: 'After the bad shot, on the long walk to trouble.',
+  pre_putt: 'Right before they draw it back. Maximum damage.',
+  post_round: '19th hole, over a beer. The long-form burn.',
+  swing_thought: 'Said before the shot. Sounds helpful. Is not.',
+};
+
+// Extra coaching shown on each card while browsing The Plant.
+const DELIVERY_TIP = 'Delivery tip: Say it calmly. Sound concerned. Walk away immediately.';
 
 // Submission dropdown options ("Not sure" stores as general).
 const SUBMIT_CATEGORIES = [
@@ -49,6 +63,7 @@ const SUBMIT_CATEGORIES = [
   { value: 'mid_round', label: 'Mid-Round' },
   { value: 'pre_putt', label: 'Pre-Putt' },
   { value: 'post_round', label: 'Post-Round' },
+  { value: 'swing_thought', label: 'The Plant' },
   { value: 'general', label: 'Not sure' },
 ];
 
@@ -63,7 +78,7 @@ async function insertRoast(row) {
   return res.error;
 }
 
-function RoastCard({ roast, fresh, onLike, onDislike }) {
+function RoastCard({ roast, fresh, onLike, onDislike, tip }) {
   const cat = CATEGORY_META[roast.category] || CATEGORY_META.general;
   return (
     <div className={`roast-card${fresh ? ' fresh' : ''}`}>
@@ -94,6 +109,7 @@ function RoastCard({ roast, fresh, onLike, onDislike }) {
           {roast.verdict}
         </span>
       </div>
+      {tip && <p className="delivery-tip">{tip}</p>}
     </div>
   );
 }
@@ -328,6 +344,9 @@ export default function App() {
           </button>
         ))}
       </div>
+      {CATEGORY_DESC[activeCategory] && (
+        <p className="cat-desc">{CATEGORY_DESC[activeCategory]}</p>
+      )}
 
       <section className="input-card">
         <div className="roast-row">
@@ -412,6 +431,7 @@ export default function App() {
               fresh={r.id === freshId.current}
               onLike={handleLike}
               onDislike={handleDislike}
+              tip={activeCategory === 'swing_thought' ? DELIVERY_TIP : null}
             />
           ))
         )}

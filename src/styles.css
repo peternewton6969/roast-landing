@@ -152,6 +152,14 @@ body {
   border-color: var(--green);
 }
 
+/* Description under the active category tab */
+.cat-desc {
+  margin: 0 0 2px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--dim);
+}
+
 /* --- Hero image --- */
 .hero {
   position: relative;
@@ -459,6 +467,16 @@ body {
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 3px 9px;
+}
+
+/* Delivery tip shown on each card while browsing The Plant. */
+.delivery-tip {
+  margin: 2px 0 0;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
 }
 
 .roast-card.fresh {
