@@ -141,6 +141,7 @@ export default function App() {
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef(null);
 
+  const [mode, setMode] = useState('browse'); // 'browse' (feed) | 'add' (submission form)
   const [roasts, setRoasts] = useState([]);
   const [activeCategory, setActiveCategory] = useState('all');
   const [tab, setTab] = useState(null); // null = randomized default (see load below)
@@ -342,6 +343,31 @@ export default function App() {
         </div>
       </header>
 
+      {/* Insult Jar mode tabs — Browse the feed vs Add an insult. Immediately below
+          the header, above the category tabs. */}
+      <div className="mode-tabs" role="tablist" aria-label="Insult Jar">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === 'browse'}
+          className={`mode-tab${mode === 'browse' ? ' active' : ''}`}
+          onClick={() => setMode('browse')}
+        >
+          Browse
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === 'add'}
+          className={`mode-tab${mode === 'add' ? ' active' : ''}`}
+          onClick={() => setMode('add')}
+        >
+          Add Insult
+        </button>
+      </div>
+
+      {mode === 'browse' && (
+        <>
       <div className="insult-jar-copy">
         <h2 className="ij-heading">The Insult Jar</h2>
         <p className="ij-body">
@@ -371,76 +397,6 @@ export default function App() {
       {CATEGORY_DESC[activeCategory] && (
         <p className="cat-desc">{CATEGORY_DESC[activeCategory]}</p>
       )}
-
-      <section className="input-card">
-        <div className="field-group">
-          <label className="tp-label sit-label" htmlFor="situation-input">
-            Situation <span className="opt">(optional)</span>
-          </label>
-          <input
-            id="situation-input"
-            className="field"
-            type="text"
-            value={situationInput}
-            placeholder={'When does this line land? e.g. "Partner is about to putt"'}
-            onChange={(e) => setSituationInput(e.target.value)}
-            aria-label="Situation (optional)"
-          />
-        </div>
-        <div className="field-group">
-          <label className="tp-label roast-label" htmlFor="roast-input">
-            Roast
-          </label>
-          <div className="roast-row">
-            <textarea
-              id="roast-input"
-              className="roast-input"
-              rows={2}
-              value={roast}
-              placeholder="Type your best roast..."
-              onChange={(e) => setRoast(e.target.value)}
-              aria-label="Your roast"
-            />
-            <button
-              type="button"
-              className={`mic${listening ? ' listening' : ''}`}
-              onClick={toggleMic}
-              aria-label={listening ? 'Stop voice input' : 'Start voice input'}
-              title="Speak your roast"
-            >
-              🎤
-            </button>
-          </div>
-        </div>
-        <label className="cat-select-label">
-          When does this land best?
-          <select
-            className="cat-select"
-            value={submitCategory}
-            onChange={(e) => setSubmitCategory(e.target.value)}
-            aria-label="When does this land best?"
-            required
-          >
-            {SUBMIT_CATEGORIES.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button
-          type="button"
-          className="rake-btn"
-          disabled={roast.trim() === '' || submitting}
-          onClick={handleRake}
-        >
-          {submitting ? 'Raking…' : 'Rake Em'}
-        </button>
-        {error !== '' && <p className="err">{error}</p>}
-        {!isConfigured && (
-          <p className="hint">Preview mode — submissions aren&rsquo;t saved yet (backend not connected).</p>
-        )}
-      </section>
 
       <div className="feed-head">
         <h2 className="section-title">Live Roasts</h2>
@@ -480,6 +436,80 @@ export default function App() {
           ))
         )}
       </div>
+        </>
+      )}
+
+      {mode === 'add' && (
+        <section className="input-card">
+          <div className="field-group">
+            <label className="tp-label sit-label" htmlFor="situation-input">
+              Situation <span className="opt">(optional)</span>
+            </label>
+            <input
+              id="situation-input"
+              className="field"
+              type="text"
+              value={situationInput}
+              placeholder={'When does this line land? e.g. "Partner is about to putt"'}
+              onChange={(e) => setSituationInput(e.target.value)}
+              aria-label="Situation (optional)"
+            />
+          </div>
+          <div className="field-group">
+            <label className="tp-label roast-label" htmlFor="roast-input">
+              Roast
+            </label>
+            <div className="roast-row">
+              <textarea
+                id="roast-input"
+                className="roast-input"
+                rows={2}
+                value={roast}
+                placeholder="Type your best roast..."
+                onChange={(e) => setRoast(e.target.value)}
+                aria-label="Your roast"
+              />
+              <button
+                type="button"
+                className={`mic${listening ? ' listening' : ''}`}
+                onClick={toggleMic}
+                aria-label={listening ? 'Stop voice input' : 'Start voice input'}
+                title="Speak your roast"
+              >
+                🎤
+              </button>
+            </div>
+          </div>
+          <label className="cat-select-label">
+            When does this land best?
+            <select
+              className="cat-select"
+              value={submitCategory}
+              onChange={(e) => setSubmitCategory(e.target.value)}
+              aria-label="When does this land best?"
+              required
+            >
+              {SUBMIT_CATEGORIES.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="rake-btn"
+            disabled={roast.trim() === '' || submitting}
+            onClick={handleRake}
+          >
+            {submitting ? 'Raking…' : 'Rake Em'}
+          </button>
+          {error !== '' && <p className="err">{error}</p>}
+          {!isConfigured && (
+            <p className="hint">Preview mode — submissions aren&rsquo;t saved yet (backend not connected).</p>
+          )}
+        </section>
+      )}
 
       <section className="waitlist">
         <h2>Want the full app?</h2>

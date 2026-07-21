@@ -381,6 +381,34 @@ body {
   flex-wrap: wrap;
 }
 
+/* Primary mode tabs: Browse vs Add Insult (full-width segmented control). */
+.mode-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px;
+  margin: 16px 0 8px;
+}
+
+.mode-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--dim);
+  font-size: 15px;
+  font-weight: 800;
+  padding: 11px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.mode-tab.active {
+  background: var(--green);
+  color: var(--ink);
+}
+
 .tabs {
   display: inline-flex;
   gap: 4px;
