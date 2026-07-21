@@ -19,14 +19,57 @@ const SpeechRecognition =
     ? window.SpeechRecognition || window.webkitSpeechRecognition
     : null;
 
+// Sort sub-tabs (within a category).
 const TABS = [
   { key: 'fresh', label: 'Fresh' },
   { key: 'fire', label: 'Fire' },
 ];
 
+// Situational categories (the Insult Jar library).
+const CATEGORY_META = {
+  tee_box: { emoji: '🏌️', label: 'Tee Box' },
+  mid_round: { emoji: '🚶', label: 'Mid-Round' },
+  pre_putt: { emoji: '⛳', label: 'Pre-Putt' },
+  post_round: { emoji: '🍺', label: 'Post-Round' },
+  general: { emoji: '🎯', label: 'General' },
+};
+
+// Category browser tabs (All + the four situational ones; general shows under All).
+const CATEGORY_TABS = [
+  { key: 'all', label: 'All' },
+  { key: 'tee_box', label: '🏌️ Tee Box' },
+  { key: 'mid_round', label: '🚶 Mid-Round' },
+  { key: 'pre_putt', label: '⛳ Pre-Putt' },
+  { key: 'post_round', label: '🍺 Post-Round' },
+];
+
+// Submission dropdown options ("Not sure" stores as general).
+const SUBMIT_CATEGORIES = [
+  { value: 'tee_box', label: 'Tee Box' },
+  { value: 'mid_round', label: 'Mid-Round' },
+  { value: 'pre_putt', label: 'Pre-Putt' },
+  { value: 'post_round', label: 'Post-Round' },
+  { value: 'general', label: 'Not sure' },
+];
+
+// Insert a roast; if the `category` column doesn't exist yet (schema not migrated),
+// retry without it so submissions never hard-fail.
+async function insertRoast(row) {
+  let res = await supabase.from('roasts').insert(row);
+  if (res.error && /category/i.test(res.error.message || '') && 'category' in row) {
+    const { category, ...rest } = row;
+    res = await supabase.from('roasts').insert(rest);
+  }
+  return res.error;
+}
+
 function RoastCard({ roast, fresh, onLike, onDislike }) {
+  const cat = CATEGORY_META[roast.category] || CATEGORY_META.general;
   return (
     <div className={`roast-card${fresh ? ' fresh' : ''}`}>
+      <span className="cat-pill">
+        {cat.emoji} {cat.label}
+      </span>
       <div className="roast-text">{roast.content}</div>
       <div className="engage">
         <div className="engage-actions">
@@ -57,6 +100,7 @@ function RoastCard({ roast, fresh, onLike, onDislike }) {
 
 export default function App() {
   const [roast, setRoast] = useState('');
+  const [submitCategory, setSubmitCategory] = useState('general'); // "Not sure" default
   const [submitting, setSubmitting] = useState(false);
   const [verdict, setVerdict] = useState(null);
   const [error, setError] = useState('');
@@ -64,6 +108,7 @@ export default function App() {
   const recognitionRef = useRef(null);
 
   const [roasts, setRoasts] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('all');
   const [tab, setTab] = useState(null); // null = randomized default (see load below)
   const freshId = useRef(null);
 
@@ -74,8 +119,14 @@ export default function App() {
   const [wlDone, setWlDone] = useState(false);
   const [wlError, setWlError] = useState('');
 
-  // Default (tab === null) keeps the randomized load order; the tabs sort on demand.
-  const sorted = useMemo(() => (tab ? sortRoasts(roasts, tab) : roasts), [roasts, tab]);
+  // Filter by category, then sort (tab === null keeps the randomized load order).
+  const displayed = useMemo(() => {
+    const inCat =
+      activeCategory === 'all'
+        ? roasts
+        : roasts.filter((r) => (r.category || 'general') === activeCategory);
+    return tab ? sortRoasts(inCat, tab) : inCat;
+  }, [roasts, activeCategory, tab]);
 
   // --- Load feed + subscribe to realtime INSERT (new roasts) and UPDATE (counts) ---
   useEffect(() => {
@@ -85,7 +136,7 @@ export default function App() {
       .from('roasts')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(200)
+      .limit(400)
       .then(({ data }) => {
         // Randomize the order on load so the feed feels different each visit.
         if (active && Array.isArray(data)) setRoasts(shuffle(data));
@@ -164,7 +215,7 @@ export default function App() {
       setVerdict(v);
 
       if (supabase) {
-        const { error: insErr } = await supabase.from('roasts').insert({ content, verdict: v });
+        const insErr = await insertRoast({ content, verdict: v, category: submitCategory });
         if (insErr) throw insErr;
         // The realtime subscription adds it to the feed.
       } else {
@@ -175,6 +226,7 @@ export default function App() {
           likes: 0,
           dislikes: 0,
           source: 'user',
+          category: submitCategory,
           created_at: new Date().toISOString(),
         };
         freshId.current = local.id;
@@ -247,12 +299,34 @@ export default function App() {
           </p>
         </div>
 
-        <p className="blurb">While we finish building it &mdash; submit your best roast below.</p>
+        <div className="insult-jar-copy">
+          <h2 className="ij-heading">The Insult Jar</h2>
+          <p className="ij-body">
+            Trash talk is a skill. Browse by moment, find your line, deliver it perfectly. Tee box,
+            pre-putt, post-round &mdash; we wrote the curriculum.
+          </p>
+        </div>
       </header>
 
       {/* Hero: the Newter 69 shot (IMG_2646). */}
       <div className="hero">
         <img src="/hero-ball.jpg" alt="Roast'n Rake — Newter 69" />
+      </div>
+
+      {/* Category browser — the situational library. Horizontally scrollable on mobile. */}
+      <div className="cat-tabs" role="tablist" aria-label="Browse by moment">
+        {CATEGORY_TABS.map((c) => (
+          <button
+            key={c.key}
+            type="button"
+            role="tab"
+            aria-selected={activeCategory === c.key}
+            className={`cat-tab${activeCategory === c.key ? ' active' : ''}`}
+            onClick={() => setActiveCategory(c.key)}
+          >
+            {c.label}
+          </button>
+        ))}
       </div>
 
       <section className="input-card">
@@ -275,6 +349,22 @@ export default function App() {
             🎤
           </button>
         </div>
+        <label className="cat-select-label">
+          When does this land best?
+          <select
+            className="cat-select"
+            value={submitCategory}
+            onChange={(e) => setSubmitCategory(e.target.value)}
+            aria-label="When does this land best?"
+            required
+          >
+            {SUBMIT_CATEGORIES.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </label>
         <button
           type="button"
           className="rake-btn"
@@ -308,10 +398,14 @@ export default function App() {
       </div>
 
       <div className="feed">
-        {sorted.length === 0 ? (
-          <p className="empty">No roasts yet. Be the first to rake someone.</p>
+        {displayed.length === 0 ? (
+          <p className="empty">
+            {activeCategory === 'all'
+              ? 'No roasts yet. Be the first to rake someone.'
+              : 'No lines for this moment yet. Add one below.'}
+          </p>
         ) : (
-          sorted.map((r) => (
+          displayed.map((r) => (
             <RoastCard
               key={r.id}
               roast={r}

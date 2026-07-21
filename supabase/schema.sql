@@ -19,6 +19,9 @@ create table if not exists public.roasts (
 alter table public.roasts add column if not exists likes    integer not null default 0;
 alter table public.roasts add column if not exists dislikes integer not null default 0;
 alter table public.roasts add column if not exists source   text    not null default 'user'; -- 'seed' | 'user'
+-- Situational category for the Insult Jar library.
+-- Values: tee_box | mid_round | pre_putt | post_round | general
+alter table public.roasts add column if not exists category text not null default 'general';
 
 alter table public.roasts enable row level security;
 
