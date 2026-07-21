@@ -215,18 +215,13 @@ body {
   gap: 6px;
 }
 
-.field-label {
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--dim);
-}
-
-.field-label .opt {
+/* Form field labels reuse the card's SITUATION/ROAST label styles
+   (.tp-label + .sit-label / .roast-label) for visual consistency. */
+.opt {
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0;
+  color: #64748b;
 }
 
 .roast-row {

@@ -374,7 +374,7 @@ export default function App() {
 
       <section className="input-card">
         <div className="field-group">
-          <label className="field-label" htmlFor="situation-input">
+          <label className="tp-label sit-label" htmlFor="situation-input">
             Situation <span className="opt">(optional)</span>
           </label>
           <input
@@ -388,7 +388,7 @@ export default function App() {
           />
         </div>
         <div className="field-group">
-          <label className="field-label" htmlFor="roast-input">
+          <label className="tp-label roast-label" htmlFor="roast-input">
             Roast
           </label>
           <div className="roast-row">
