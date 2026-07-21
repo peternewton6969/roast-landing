@@ -204,6 +204,25 @@ body {
   gap: 12px;
 }
 
+.field-group {
+  display: grid;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+}
+
+.field-label .opt {
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .roast-row {
   display: flex;
   gap: 10px;
@@ -492,6 +511,43 @@ body {
 
 .roast-text {
   font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Two-part SITUATION + ROAST layout (situational lines) */
+.two-part {
+  display: grid;
+  gap: 8px;
+}
+
+.tp-block {
+  display: grid;
+  gap: 3px;
+}
+
+.tp-label {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sit-label {
+  color: #64748b;
+}
+
+.roast-label {
+  color: #16a34a;
+}
+
+.sit-text {
+  font-size: 12px;
+  font-style: italic;
+  color: #94a3b8;
   line-height: 1.4;
   white-space: pre-wrap;
   word-break: break-word;

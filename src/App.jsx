@@ -67,13 +67,17 @@ const SUBMIT_CATEGORIES = [
   { value: 'general', label: 'Not sure' },
 ];
 
-// Insert a roast; if the `category` column doesn't exist yet (schema not migrated),
-// retry without it so submissions never hard-fail.
+// Insert a roast; if a column doesn't exist yet (schema not migrated), drop it and
+// retry so submissions never hard-fail.
 async function insertRoast(row) {
-  let res = await supabase.from('roasts').insert(row);
-  if (res.error && /category/i.test(res.error.message || '') && 'category' in row) {
-    const { category, ...rest } = row;
-    res = await supabase.from('roasts').insert(rest);
+  let payload = row;
+  let res = await supabase.from('roasts').insert(payload);
+  for (const col of ['situation', 'category']) {
+    if (res.error && new RegExp(col, 'i').test(res.error.message || '') && col in payload) {
+      const { [col]: _drop, ...rest } = payload;
+      payload = rest;
+      res = await supabase.from('roasts').insert(payload);
+    }
   }
   return res.error;
 }
@@ -85,7 +89,20 @@ function RoastCard({ roast, fresh, onLike, onDislike, tip }) {
       <span className="cat-pill">
         {cat.emoji} {cat.label}
       </span>
-      <div className="roast-text">{roast.content}</div>
+      {roast.situation ? (
+        <div className="two-part">
+          <div className="tp-block">
+            <span className="tp-label sit-label">Situation</span>
+            <span className="sit-text">{roast.situation}</span>
+          </div>
+          <div className="tp-block">
+            <span className="tp-label roast-label">Roast</span>
+            <span className="roast-text">{roast.content}</span>
+          </div>
+        </div>
+      ) : (
+        <div className="roast-text">{roast.content}</div>
+      )}
       <div className="engage">
         <div className="engage-actions">
           <button
@@ -116,6 +133,7 @@ function RoastCard({ roast, fresh, onLike, onDislike, tip }) {
 
 export default function App() {
   const [roast, setRoast] = useState('');
+  const [situationInput, setSituationInput] = useState('');
   const [submitCategory, setSubmitCategory] = useState('general'); // "Not sure" default
   const [submitting, setSubmitting] = useState(false);
   const [verdict, setVerdict] = useState(null);
@@ -224,6 +242,7 @@ export default function App() {
       setError('Keep it on the golf, not identities. That one’s not going up.');
       return;
     }
+    const situation = situationInput.trim() || null;
     setSubmitting(true);
     setError('');
     try {
@@ -231,7 +250,7 @@ export default function App() {
       setVerdict(v);
 
       if (supabase) {
-        const insErr = await insertRoast({ content, verdict: v, category: submitCategory });
+        const insErr = await insertRoast({ content, verdict: v, category: submitCategory, situation });
         if (insErr) throw insErr;
         // The realtime subscription adds it to the feed.
       } else {
@@ -243,6 +262,7 @@ export default function App() {
           dislikes: 0,
           source: 'user',
           category: submitCategory,
+          situation,
           created_at: new Date().toISOString(),
         };
         freshId.current = local.id;
@@ -250,6 +270,7 @@ export default function App() {
       }
 
       setRoast('');
+      setSituationInput('');
       window.setTimeout(() => setVerdict(null), 3000);
     } catch {
       setVerdict(null);
@@ -349,24 +370,44 @@ export default function App() {
       )}
 
       <section className="input-card">
-        <div className="roast-row">
-          <textarea
-            className="roast-input"
-            rows={2}
-            value={roast}
-            placeholder="Type your best roast..."
-            onChange={(e) => setRoast(e.target.value)}
-            aria-label="Your roast"
+        <div className="field-group">
+          <label className="field-label" htmlFor="situation-input">
+            Situation <span className="opt">(optional)</span>
+          </label>
+          <input
+            id="situation-input"
+            className="field"
+            type="text"
+            value={situationInput}
+            placeholder={'When does this line land? e.g. "Partner is about to putt"'}
+            onChange={(e) => setSituationInput(e.target.value)}
+            aria-label="Situation (optional)"
           />
-          <button
-            type="button"
-            className={`mic${listening ? ' listening' : ''}`}
-            onClick={toggleMic}
-            aria-label={listening ? 'Stop voice input' : 'Start voice input'}
-            title="Speak your roast"
-          >
-            🎤
-          </button>
+        </div>
+        <div className="field-group">
+          <label className="field-label" htmlFor="roast-input">
+            Roast
+          </label>
+          <div className="roast-row">
+            <textarea
+              id="roast-input"
+              className="roast-input"
+              rows={2}
+              value={roast}
+              placeholder="Type your best roast..."
+              onChange={(e) => setRoast(e.target.value)}
+              aria-label="Your roast"
+            />
+            <button
+              type="button"
+              className={`mic${listening ? ' listening' : ''}`}
+              onClick={toggleMic}
+              aria-label={listening ? 'Stop voice input' : 'Start voice input'}
+              title="Speak your roast"
+            >
+              🎤
+            </button>
+          </div>
         </div>
         <label className="cat-select-label">
           When does this land best?
