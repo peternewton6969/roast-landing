@@ -741,6 +741,19 @@ body {
   line-height: 1.1;
 }
 
+/* Placeholder pages (Features, Captain's Log): centered heading + one line. */
+.mission-placeholder {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.mission-placeholder .mission-title {
+  margin: 0 0 12px;
+}
+
 .mission p {
   margin: 0 0 18px;
   font-size: 17px;

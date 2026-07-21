@@ -26,6 +26,12 @@ export default function Nav() {
             <Link to="/mission" className="nav-link" onClick={close}>
               Our Mission
             </Link>
+            <Link to="/features" className="nav-link" onClick={close}>
+              Features
+            </Link>
+            <Link to="/captains-log" className="nav-link" onClick={close}>
+              Captain&rsquo;s Log
+            </Link>
           </nav>
         </>
       )}
