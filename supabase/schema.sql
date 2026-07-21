@@ -20,8 +20,11 @@ alter table public.roasts add column if not exists likes    integer not null def
 alter table public.roasts add column if not exists dislikes integer not null default 0;
 alter table public.roasts add column if not exists source   text    not null default 'user'; -- 'seed' | 'user'
 -- Situational category for the Insult Jar library.
--- Values: tee_box | mid_round | pre_putt | post_round | general
+-- Values: tee_box | mid_round | pre_putt | post_round | swing_thought | general
 alter table public.roasts add column if not exists category text not null default 'general';
+-- Optional SITUATION trigger (nullable). Null = single-line card; set = two-part
+-- SITUATION + ROAST card. Situational categories populate it.
+alter table public.roasts add column if not exists situation text default null;
 
 alter table public.roasts enable row level security;
 
