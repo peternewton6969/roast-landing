@@ -4,6 +4,7 @@ import { getVerdict, verdictColor } from './lib/verdict.js';
 import { likeRoast, dislikeRoast, sortRoasts } from './lib/roasts.js';
 import { isRejected } from './lib/moderation.js';
 import Waitlist from './Waitlist.jsx';
+import FooterCTA from './FooterCTA.jsx';
 
 /** Fisher–Yates shuffle (used to randomize the feed on page load). */
 function shuffle(arr) {
@@ -494,6 +495,8 @@ export default function Home() {
       )}
 
       {mode === 'browse' && <Waitlist />}
+
+      <FooterCTA />
 
       <footer className="footer">Roast&rsquo;n Rake &middot; play fair, pay up, repeat.</footer>
     </div>

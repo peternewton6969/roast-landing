@@ -1,4 +1,4 @@
-import Waitlist from './Waitlist.jsx';
+import FooterCTA from './FooterCTA.jsx';
 
 export default function CaptainsLog() {
   return (
@@ -131,7 +131,7 @@ export default function CaptainsLog() {
         the Roast and Rake premium tier. Pricing coming soon.
       </p>
 
-      <Waitlist />
+      <FooterCTA />
     </main>
   );
 }

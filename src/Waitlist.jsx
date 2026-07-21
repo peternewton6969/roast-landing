@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import { supabase } from './supabaseClient.js';
 
-// Shared early-access signup. Used on the landing feed and on content pages.
-export default function Waitlist({ heading = 'Want the full app?' }) {
+// Shared early-access signup. Used on the landing feed and in the site-wide footer
+// CTA. `heading`/`sub` override the copy; `footNote` renders a line under the form.
+export default function Waitlist({
+  heading = 'Want the full app?',
+  sub = 'Get early access when we launch.',
+  footNote = null,
+}) {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -34,7 +39,7 @@ export default function Waitlist({ heading = 'Want the full app?' }) {
   return (
     <section className="waitlist">
       <h2>{heading}</h2>
-      <p className="sub">Get early access when we launch.</p>
+      <p className="sub">{sub}</p>
       {done ? (
         <div className="waitlist-done">You&rsquo;re on the list. We&rsquo;ll be in touch.</div>
       ) : (
@@ -67,6 +72,7 @@ export default function Waitlist({ heading = 'Want the full app?' }) {
           </button>
         </form>
       )}
+      {footNote && <p className="waitlist-foot">{footNote}</p>}
     </section>
   );
 }

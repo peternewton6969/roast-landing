@@ -1,4 +1,4 @@
-import Waitlist from './Waitlist.jsx';
+import FooterCTA from './FooterCTA.jsx';
 
 export default function Features() {
   return (
@@ -100,7 +100,7 @@ export default function Features() {
 
       <p>Captain&rsquo;s Commentary and IOU Ledger are premium. Pricing coming soon.</p>
 
-      <Waitlist />
+      <FooterCTA />
     </main>
   );
 }

@@ -660,6 +660,25 @@ body {
   padding: 8px;
 }
 
+.waitlist-foot {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* Site-wide early-access CTA at the bottom of every page. The top border divides it
+   from the page content; the reused .waitlist card sits just below the divider. */
+.footer-cta {
+  margin-top: 48px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-cta .waitlist {
+  margin-top: 24px;
+}
+
 .footer {
   margin-top: 40px;
   text-align: center;

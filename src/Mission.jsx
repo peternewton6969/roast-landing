@@ -1,3 +1,5 @@
+import FooterCTA from './FooterCTA.jsx';
+
 export default function Mission() {
   return (
     <main className="mission">
@@ -64,6 +66,8 @@ export default function Mission() {
       </p>
 
       <p className="mission-close">No refunds on insults delivered.</p>
+
+      <FooterCTA />
     </main>
   );
 }
