@@ -668,11 +668,11 @@ body {
   color: var(--green);
 }
 
-/* Site-wide early-access CTA at the bottom of every page. The top border divides it
-   from the page content; the reused .waitlist card sits just below the divider. */
+/* Site-wide early-access CTA at the bottom of every page. A subtle green accent
+   border divides it from the page content; the reused .waitlist card sits below it. */
 .footer-cta {
   margin-top: 48px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--green);
 }
 
 .footer-cta .waitlist {
