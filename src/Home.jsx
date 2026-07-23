@@ -316,8 +316,7 @@ export default function Home() {
           <div className="pitch">
             <p className="pitch-lead">It&rsquo;s a golf app that tracks scores and settles bets.</p>
             <p className="pitch-detail">
-              The <strong>superpower</strong> comes at the end when it roasts your buddies with brutal
-              accuracy. Think Kenny Powers doing your post-round breakdown.
+              We will teach you how to talk trash. The Insult Jar is where you practice.
             </p>
           </div>
         </div>
