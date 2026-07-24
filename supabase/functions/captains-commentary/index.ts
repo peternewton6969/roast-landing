@@ -58,7 +58,9 @@ Deno.serve(async (req: Request) => {
   }
   if (!userMessage) return json({ error: 'empty' }, 400);
 
-  const key = Deno.env.get('ANTHROPIC_API_KEY');
+  // Trim whitespace/newlines and strip accidental wrapping quotes — a secret set with
+  // a trailing newline or quotes yields a malformed x-api-key header (Anthropic 401).
+  const key = (Deno.env.get('ANTHROPIC_API_KEY') ?? '').trim().replace(/^["']|["']$/g, '');
   if (!key) return json({ error: 'not_configured' }, 503);
 
   try {
