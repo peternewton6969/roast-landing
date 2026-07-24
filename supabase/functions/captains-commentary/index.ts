@@ -81,7 +81,13 @@ Deno.serve(async (req: Request) => {
     });
     if (!res.ok) {
       const detail = await res.text().catch(() => '');
-      return json({ error: 'upstream_error', status: res.status, detail: detail.slice(0, 500) }, 502);
+      // TEMP diagnostic: on an auth failure, surface only the key's shape (length +
+      // prefix + last 4) so a bad/wrong-type key can be pinpointed without exposing it.
+      const keyMeta =
+        res.status === 401
+          ? { len: key.length, prefix: key.slice(0, 12), tail: key.slice(-4) }
+          : undefined;
+      return json({ error: 'upstream_error', status: res.status, detail: detail.slice(0, 500), keyMeta }, 502);
     }
     const data = await res.json();
     const text = String(
